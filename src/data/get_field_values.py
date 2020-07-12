@@ -26,7 +26,7 @@ def main():
     # extract_fields_test_all()
     # Try to extact fields from a specific page_source
     # extract_fields_test("../../data/raw/page_sources/page_source4969")
-    data_path = "../../data_samples"
+    data_path = "../../data"
     #
     feature_dictionaries, error_list = extract_fields_for_all(file_path="%s/raw/page_sources/" % data_path)
     print(error_list)
@@ -181,7 +181,7 @@ def get_date_sold(soup):
 
 def get_address(div_grind_container):
     find_all = div_grind_container.find_all('span')
-    address_obj = get_element_or_none(find_all, element=1)
+    address_obj = get_element_or_none(find_all, element=0)
     address = get_text_if_obj_defined(address_obj)
     return address
 
