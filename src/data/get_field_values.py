@@ -24,7 +24,7 @@ def main():
     # Try to extract fields from all files in a directory and report success/failure
     extract_fields_test_all()
     # Try to extact fields from a specific page_source
-    extract_fields_test("../../data/raw/page_sources/page_source4015")
+    extract_fields_test("../../data/raw/page_sources/page_source4781")
 
 
     print(os.getcwd())
@@ -125,9 +125,10 @@ def get_home_features(section_main_content):
 
         if home_features_list is not None:
             home_feature_list_items = home_features_list.find_all('li',
-                                                                  {'class': 'FeatureList__FeatureListItem-iipbki-0 fKDDGQ'})
-            for i in range(len(home_features_list)):
-                feature = get_text_if_obj_defined(home_feature_list_items[i])
+                                                                  {'class': 'FeatureList__FeatureListItem-iipbki-0 '
+                                                                            'fKDDGQ'})
+            for home_feature in home_features_list:
+                feature = get_text_if_obj_defined(home_feature)
                 all_home_features.append(feature)
                 if "Lot Size" in feature:
                     lot_size = feature
