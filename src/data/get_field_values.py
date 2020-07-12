@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import pickle
+
 import click
 import logging
 from pathlib import Path
@@ -6,43 +8,69 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import lxml
 import os
+import pandas as pd
+from IPython.core.display import display
 
 
 class Codes:
     def __init__(self):
         self.na_code = ""
 
+
 def main():
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
 
-    logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
-
     # TEST functions
     # Try to extract fields from all files in a directory and report success/failure
-    #extract_fields_test_all()
+    # extract_fields_test_all()
     # Try to extact fields from a specific page_source
-    extract_fields_test("../../data/raw/page_sources/page_source4969")
+    # extract_fields_test("../../data/raw/page_sources/page_source4969")
+    data_path = "/home/arash/PycharmProjects/property_scraper/data_samples"
+    #
+    feature_dictionaries, error_list = extract_fields_for_all(file_path="%s/raw/page_sources/" % data_path)
+    print(error_list)
+    df = dict_list_to_pd_dataframe(feature_dictionaries)
 
+    df.to_csv("%s/processed/pages.csv" % data_path)
+    df.to_pickle("%s/processed/pages.pkl" % data_path)
+
+    pickle.dump(error_list,
+                open("%s/processed/error_list.pkl" % data_path, "wb"))
 
     print(os.getcwd())
 
 
-def extract_fields_test_all():
-    num_errors = 0
-    total = len(os.listdir("../../data/raw/page_sources/"))
-    for myfile in os.listdir("../../data/raw/page_sources/"):
+def dict_list_to_pd_dataframe(list_of_dictionaries):
+    return pd.DataFrame(list_of_dictionaries)
+
+
+def extract_fields_for_all(file_path="../../data/raw/page_sources/"):
+    features = []
+    error_list = []
+    for myfile in os.listdir(file_path):
         try:
-            out = extract_fields("../../data/raw/page_sources/" + myfile)
-            # print(out)
+            out = extract_fields(file_path + myfile)
+            features.append(out)
+        except Exception as e:
+            error_list.append((myfile, e))
+    return features, error_list
+
+
+def extract_fields_test_all(file_path="../../data/raw/page_sources/"):
+    num_errors = 0
+    total = len(os.listdir(file_path))
+    for myfile in os.listdir(file_path):
+        try:
+            out = extract_fields(file_path + myfile)
         except Exception as e:
             print(myfile)
             print(e)
             num_errors += 1
     print(total, num_errors)
     return out
+
 
 def extract_fields_test(myfile: str):
     out = extract_fields(myfile)
@@ -53,7 +81,6 @@ def extract_fields_test(myfile: str):
 def extract_fields(myfile):
     soup = make_soup(myfile)
     div_grind_container, section_main_content = get_main_sections(soup)
-
 
     # info at the top: price, # of bed & bath, sqft etc.
     price = get_price(soup)
@@ -97,7 +124,7 @@ def extract_fields(myfile):
 
 def get_realtor_description(soup):
     realtor_description_obj = soup.find('div',
- {'data-testid': 'home-description-text-description-text'})
+                                        {'data-testid': 'home-description-text-description-text'})
     realtor_description = get_text_if_obj_defined(realtor_description_obj)
     return realtor_description
 
@@ -134,13 +161,14 @@ def get_home_features(section_main_content):
                     lot_size = feature
                 elif "Built in" in feature:
                     year_built = feature
-                elif any(elem in feature for elem in ["Single Family Home", "Condo","House", "Multi-Family", "Multi Family" ,"Townhome", "Townhouse"]):
+                elif any(elem in feature for elem in
+                         ["Single Family Home", "Condo", "House", "Multi-Family", "Multi Family", "Townhome",
+                          "Townhouse"]):
                     home_type = feature
                 elif "/sqft" in feature:
                     sqft_price = feature
                 elif "HOA" in feature:
                     hoa_fee = feature
-
 
     return home_type, lot_size, sqft_price, year_built, hoa_fee, all_home_features
 
@@ -208,7 +236,7 @@ def get_price(soup):
     return price
 
 
-def get_text_if_obj_defined(obj, na_code: str =Codes().na_code):
+def get_text_if_obj_defined(obj, na_code: str = Codes().na_code):
     if obj is not None:
         extracted_text = obj.text
     else:
