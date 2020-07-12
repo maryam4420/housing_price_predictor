@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 import lxml
 import os
 import pandas as pd
-from IPython.core.display import display
 
 
 class Codes:
@@ -27,7 +26,7 @@ def main():
     # extract_fields_test_all()
     # Try to extact fields from a specific page_source
     # extract_fields_test("../../data/raw/page_sources/page_source4969")
-    data_path = "/home/arash/PycharmProjects/property_scraper/data_samples"
+    data_path = "../../data_samples"
     #
     feature_dictionaries, error_list = extract_fields_for_all(file_path="%s/raw/page_sources/" % data_path)
     print(error_list)
