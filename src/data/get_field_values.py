@@ -22,9 +22,9 @@ def main():
 
     # TEST functions
     # Try to extract fields from all files in a directory and report success/failure
-    extract_fields_test_all()
+    #extract_fields_test_all()
     # Try to extact fields from a specific page_source
-    extract_fields_test("../../data/raw/page_sources/page_source4781")
+    extract_fields_test("../../data/raw/page_sources/page_source4969")
 
 
     print(os.getcwd())
@@ -68,7 +68,7 @@ def extract_fields(myfile):
         area, zipcode, address = [Codes().na_code] * 3
     date_sold = get_date_sold(soup)
     # info in the bottom: home_type, sqft, lot_size, year_built
-    home_type, lot_size, sqft_price, year_built, hoa_fee, all_home_features = get_home_features(section_main_content)
+    home_type, lot_size, sqft_price, year_built, hoa_fee, all_home_features, = get_home_features(section_main_content)
     # get tax_amount, and text
     tax_amount = get_tax_amount(soup)
     description = get_description(soup)
@@ -90,7 +90,7 @@ def extract_fields(myfile):
                 "all_home_features": all_home_features,
                 "tax_amount": tax_amount,
                 "description": description,
-                "realtor_description": realtor_description
+                "realtor_description": realtor_description,
                 }
     return features
 
@@ -134,13 +134,13 @@ def get_home_features(section_main_content):
                     lot_size = feature
                 elif "Built in" in feature:
                     year_built = feature
-                # TODO: Get the list of possible home types
-                elif any(elem in feature for elem in ["Single Family Home", "Condo"]):
+                elif any(elem in feature for elem in ["Single Family Home", "Condo","House", "Multi-Family", "Multi Family" ,"Townhome", "Townhouse"]):
                     home_type = feature
                 elif "/sqft" in feature:
                     sqft_price = feature
                 elif "HOA" in feature:
                     hoa_fee = feature
+
 
     return home_type, lot_size, sqft_price, year_built, hoa_fee, all_home_features
 
