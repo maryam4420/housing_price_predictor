@@ -12,11 +12,8 @@ import requests
 
 
 from bs4 import BeautifulSoup
-import requests
-import time, os
+from datetime import datetime
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 
 # from re import sub
@@ -32,8 +29,7 @@ soup = BeautifulSoup(page,'lxml')
 outp = soup.find('div', {'class':'Grid__GridContainer-sc-5ig2n4-1 eVbKXM'})
 
 # info at the top: price, # of bed & bath, sqft etc.
-price = soup.find('div', {'class':'Text__TextBase-sc-1i9uasc-0-div Text__TextContainerBase-sc-1i9uasc-1 qAaUO'}).text
-bed = soup.find_all('li', {'data-testid':'bed'})[1].text
+price = soup.find('div', {'class':'Text__TextBase-sc-1i9uasc-0-div Text__TextContainerBase-sc-1i9uasc-1 qAaUO'}).text; bed = soup.find_all('li', {'data-testid':'bed'})[1].text
 bath = soup.find_all('li', {'data-testid':'bath'})[1].text
 sqft = soup.find_all('li', {'data-testid':'floor'})[1].text
 area = outp.find('a').text
@@ -142,7 +138,6 @@ Jun 30, 2020
 # In[225]:
 
 
-from datetime import datetime
 
 
 # In[230]:
