@@ -12,4 +12,5 @@ selenium
 bs4
 lxml
 pickle
+folium
 python-dotenv>=0.5.1
